@@ -15,6 +15,8 @@ public class BoardManager : MonoBehaviour
     
     [SerializeField] private GameObject gemPrefab;
 
+    float distanceBetweenGems = 1f;
+
     private void Awake()
     {
         SwipeDetector.OnSwipe += SwipeDetector_OnSwipe;
@@ -71,7 +73,7 @@ public class BoardManager : MonoBehaviour
 
         // print($"TR Bounds: {trGemBounds}");
         // print($"Bottom Left Bounds: {bottomLeftBound} ; Top Right Bounds: {topRightBound}");
-        print($"World Bounds: {worldBoardBound}");
+        // print($"World Bounds: {worldBoardBound}");
 
     }
 
@@ -197,24 +199,58 @@ public class BoardManager : MonoBehaviour
             // print($"Swipping Ended");
             // Make move
             // draggingGem may already be null if dragged in a wrong start position
-            draggingGem = null;
 
-            foreach (var gem in draggingRowOrCol)
+            // Snap to correct position
+            // Create a Gem.GemType[,] grid from this position
+            // Use the Board.CheckMatches function on this grid
+            // if there are NO matches
+            // * Do nothing and return gems to original position (tween?)
+            // if there are matches
+            // * trigger a loop that runs while there are no more matches
+            // * * update gem original positions to current one, and gridPos of each gem
+            // * * update "official" GemType grid (Board.gGrid)
+            // * * "delete" matching gems and add to a score
+            // * * Make remaining gems fall to the bottom (tween?) and update their data and the grid's
+            // * * Generate new gems where there are missing ones, update their data and the grid's
+            // * * Create Gem.GemType[,] grid from current grid
+            // * * Use Board.CheckMatches on the new grid
+
+            // snap
+            foreach(var gem in draggingRowOrCol)
             {
-                gem.transform.position = gem.GetComponent<Gem>().originalPosition;
+                gem.transform.position = GetGridSnappedPos(gem.transform.position, distanceBetweenGems, worldBoardBound);
             }
+
+            // Create GemType[,]
+            var currentGemTypeArray = GetGemTypeArray(gemGOGrid);
+
+            // Check if there are matches on this position
+            var matches = board.CheckMatches(currentGemTypeArray);
+
+            // if there are no matches, return them to original position
+            if (matches.Count == 0)
+            {
+                // Apply tween back to original position?
+                print($"NO matches");
+                foreach (var gem in draggingRowOrCol)
+                {
+                    gem.transform.position = gem.GetComponent<Gem>().originalPosition;
+                }
+            }
+            else
+            {
+                // There are matches
+                print($"There are matches");
+                foreach (var gem in draggingRowOrCol)
+                {
+                    gem.transform.position = gem.GetComponent<Gem>().originalPosition;
+                }
+            }
+
+
+            draggingGem = null;
             draggingRowOrCol = null;
-
         }
-
-        // if (draggingGem != null)
-        // {
-        //     print($"Dragging Gem: {draggingGem.GetComponent<Gem>().gemType} at {draggingGem.transform.position} {data.Direction}");
-        // }
-        // else
-        // {
-        //     print("No chosen gem");
-        // }
 
         lastSwipeDirection = data.Direction;
     }
@@ -237,5 +273,41 @@ public class BoardManager : MonoBehaviour
             goRow[i] = gemGOGrid[i, gem.GetComponent<Gem>().gridPos.y];
         }
         return goRow;
+    }
+
+    Vector3 GetGridSnappedPos(Vector3 gemPos, float distBetween, Rect bounds)
+    {
+        float extent = distBetween / 2f;
+
+        float gridX = bounds.x +
+            distBetween * (float)Math.Floor((gemPos.x - bounds.x) / distBetween) +
+            extent;
+        float gridY = bounds.y +
+            distBetween * (float)Math.Floor((gemPos.y - bounds.y) / distBetween) +
+            extent;
+
+        return new Vector3(gridX, gridY, gemPos.z);
+    }
+
+    Vector2Int GetGridPos(Vector3 gemPos, float distBetween, Rect bounds)
+    {
+        Vector3 gsp = GetGridSnappedPos(gemPos, distBetween, bounds);
+        return new Vector2Int((int)gsp.x, (int)gsp.y);
+    }
+
+    Gem.GemType[,] GetGemTypeArray(GameObject[,] goGrid)
+    {
+        int w = goGrid.GetLength(0);
+        int h = goGrid.GetLength(1);
+
+        Gem.GemType[,] gtGrid = new Gem.GemType[w, h];
+
+        foreach (GameObject gem in goGrid)
+        {
+            Vector2Int gridPos = GetGridPos(gem.transform.position, distanceBetweenGems, worldBoardBound);
+            gtGrid[gridPos.x, gridPos.y] = gem.GetComponent<Gem>().gemType;
+        }
+
+        return gtGrid;
     }
 }
