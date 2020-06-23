@@ -77,14 +77,14 @@ public class Board : MonoBehaviour
             }
         }
 
-        if (results.Count > 0)
-        {
-            print($"Matches: {results.Count}");
-            foreach (var result in results)
-            {
-                print($"    Type: {grid[result[0].x, result[0].y]} Count: {result.Count}");
-            }
-        }
+        // if (results.Count > 0)
+        // {
+        //     print($"Matches: {results.Count}");
+        //     foreach (var result in results)
+        //     {
+        //         print($"    Type: {grid[result[0].x, result[0].y]} Count: {result.Count}");
+        //     }
+        // }
 
         return results.ToList();
     }
@@ -167,11 +167,11 @@ public class Board : MonoBehaviour
                 // This is returning Count > 0 when it shouldn't
                 if (matches.Count > 0)
                 {
-                    print($"Still game left (row {row}, shift {shiftCount})");
-                    foreach (var match in matches)
-                    {
-                        print($"    Type: {shiftedGrid[match[0].x, match[0].y]} Count: {match.Count}");
-                    }
+                    // print($"Still game left (row {row}, shift {shiftCount})");
+                    // foreach (var match in matches)
+                    // {
+                    //     print($"    Type: {shiftedGrid[match[0].x, match[0].y]} Count: {match.Count}");
+                    // }
                     return true;
                 }
             }
@@ -190,11 +190,11 @@ public class Board : MonoBehaviour
                 var matches = CheckMatches(shiftedGrid);
                 if (matches.Count > 0)
                 {
-                    print($"Still game left (col {col} shift {shiftCount})");
-                    foreach (var match in matches)
-                    {
-                        print($"    Type: {shiftedGrid[match[0].x, match[0].y]} Count: {match.Count}");
-                    }
+                    // print($"Still game left (col {col} shift {shiftCount})");
+                    // foreach (var match in matches)
+                    // {
+                    //     print($"    Type: {shiftedGrid[match[0].x, match[0].y]} Count: {match.Count}");
+                    // }
                     return true;
                 }
             }

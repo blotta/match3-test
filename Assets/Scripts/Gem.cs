@@ -4,6 +4,9 @@ using UnityEngine;
 
 public class Gem : MonoBehaviour
 {
+    public Vector3 originalPosition;
+    public Vector2Int gridPos;
+
     public enum GemType
     {
         MILK,
