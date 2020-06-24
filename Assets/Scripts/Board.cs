@@ -272,4 +272,9 @@ public class Board : MonoBehaviour
         }
         return mockGrid;
     }
+
+    public void UpdateGemTypeGrid(Gem.GemType[,] newGrid)
+    {
+        gGrid = newGrid;
+    }
 }
