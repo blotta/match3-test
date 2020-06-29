@@ -4,9 +4,6 @@ using UnityEngine;
 
 public class Gem : MonoBehaviour
 {
-    public Vector3 originalPosition;
-    public Vector2Int gridPos;
-
     public enum GemType
     {
         MILK,
@@ -19,16 +16,6 @@ public class Gem : MonoBehaviour
     }
 
     public GemType gemType;
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
+    public Vector3 originalPosition;
+    public Vector2Int gridPos;
 }

@@ -5,10 +5,10 @@ using System.Data;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
-[RequireComponent(typeof(Board))]
 public class BoardManager : MonoBehaviour
 {
-    Board board;
+    public int width;
+    public int height;
 
     public GameObject[,] gemGOGrid;
 
@@ -16,7 +16,7 @@ public class BoardManager : MonoBehaviour
     
     [SerializeField] private GameObject gemPrefab;
 
-    float distanceBetweenGems = 1f;
+    [SerializeField] float distanceBetweenGems = 1f;
 
     private void Awake()
     {
@@ -30,36 +30,45 @@ public class BoardManager : MonoBehaviour
 
     void Start()
     {
-        board = GetComponent<Board>();
-
-        gemGOGrid = new GameObject[board.width, board.height];
+        gemGOGrid = new GameObject[width, height];
 
         ResetGemGOGrid();
     }
 
     void ResetGemGOGrid()
     {
-        var gemGrid = board.GetGGridCopy();
-
-        for (int i = 0; i < gemGrid.GetLength(0); i++)
+        // Destroy GOs in current grid
+        if (gemGOGrid != null)
         {
-            for (int j = 0; j < gemGrid.GetLength(1); j++)
+            foreach (GameObject oldGem in gemGOGrid)
             {
-                if (gemGOGrid[i, j] != null)
+                if (oldGem != null)
                 {
-                    Destroy(gemGOGrid[i, j]);
+                    Destroy(oldGem);
                 }
-                GameObject gem = Instantiate(gemPrefab, new Vector2(i, j), Quaternion.identity, transform);
-                gem.name = $"({i}, {j})";
+            }
+        }
+
+        // Create new GOs
+        Gem.GemType[,] gemGrid = Board.GetNewPlayableGrid(width, height);
+        gemGOGrid = new GameObject[width, height];
+
+        for (int i = 0; i < width; i++)
+        {
+            for (int j = 0; j < height; j++)
+            {
+                Vector3 worldPos = new Vector3(i * distanceBetweenGems, j * distanceBetweenGems, 0);
+                GameObject gem = Instantiate(gemPrefab, worldPos, Quaternion.identity, transform);
                 gem.GetComponent<Gem>().gemType = gemGrid[i, j];
                 gem.GetComponent<SpriteRenderer>().sprite = GemManager.Instance.GetGemOfType(gemGrid[i, j]).Sprite;
                 gem.GetComponent<Gem>().originalPosition = gem.transform.position;
                 gem.GetComponent<Gem>().gridPos = new Vector2Int(i, j);
+                gem.name = $"({i}, {j})->{gemGrid[i, j]}";
                 gemGOGrid[i, j] = gem;
-
             }
         }
 
+        // World Bounds
         var blGem = gemGOGrid[0, 0];
         var blGemBounds = blGem.GetComponent<SpriteRenderer>().sprite.bounds;
         var bottomLeftBound = new Vector2(blGem.transform.position.x - blGemBounds.extents.x, blGem.transform.position.y - blGemBounds.extents.y);
@@ -75,7 +84,6 @@ public class BoardManager : MonoBehaviour
         // print($"TR Bounds: {trGemBounds}");
         // print($"Bottom Left Bounds: {bottomLeftBound} ; Top Right Bounds: {topRightBound}");
         // print($"World Bounds: {worldBoardBound}");
-
     }
 
     GameObject[,] UpdateGemGOGrid()
@@ -218,7 +226,6 @@ public class BoardManager : MonoBehaviour
             // if there are matches
             // * trigger a loop that runs while there are no more matches
             // * * update gem original positions to current one, and gridPos of each gem
-            // * * update "official" GemType grid (Board.gGrid)
             // * * "delete" matching gems and add to a score
             // * * Make remaining gems fall to the bottom (tween?) and update their data and the grid's
             // * * Generate new gems where there are missing ones, update their data and the grid's
@@ -235,7 +242,7 @@ public class BoardManager : MonoBehaviour
             var currentGemTypeArray = GetGemTypeArray(gemGOGrid);
 
             // Check if there are matches on this position
-            var matches = board.CheckMatches(currentGemTypeArray);
+            var matches = Board.CheckMatches(currentGemTypeArray);
 
             // while (matches.Count > 0)
             if (matches.Count > 0)
@@ -250,9 +257,6 @@ public class BoardManager : MonoBehaviour
                     gemScript.gridPos = GetGridPosFromWorld(gem.transform.position, distanceBetweenGems, worldBoardBound);
                 }
                 gemGOGrid = UpdateGemGOGrid();
-
-                // Update "official" GemType grid
-                board.UpdateGemTypeGrid(currentGemTypeArray);
 
                 // Delete matching gems and add to a score
                 foreach (var match in matches)
@@ -315,10 +319,9 @@ public class BoardManager : MonoBehaviour
                 // Update data
                 gemGOGrid = UpdateGemGOGrid();
                 currentGemTypeArray = GetGemTypeArray(gemGOGrid);
-                board.UpdateGemTypeGrid(currentGemTypeArray);
 
                 // Last thing to check in loop
-                matches = board.CheckMatches(currentGemTypeArray);
+                matches = Board.CheckMatches(currentGemTypeArray);
                 if (matches.Count > 0)
                 {
                     print($"Still more matches");

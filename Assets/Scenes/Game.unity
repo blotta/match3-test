@@ -342,9 +342,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1145096867}
-  - component: {fileID: 1145096868}
-  - component: {fileID: 1145096869}
   - component: {fileID: 1145096871}
+  - component: {fileID: 1145096868}
   m_Layer: 0
   m_Name: Board
   m_TagString: Untagged
@@ -375,25 +374,14 @@ MonoBehaviour:
   m_GameObject: {fileID: 1145096866}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e37013699ac24cf4aa2211185ff400cd, type: 3}
+  m_Script: {fileID: 11500000, guid: 1e0f93f2657e7d74e95c995ffdf9ea67, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   width: 6
   height: 6
---- !u!114 &1145096869
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1145096866}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1e0f93f2657e7d74e95c995ffdf9ea67, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
   gemPrefab: {fileID: 1798204867751398003, guid: f599beec1f41fb548b09e45949c143dc,
     type: 3}
+  distanceBetweenGems: 1
 --- !u!114 &1145096871
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -589,7 +577,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1145096868}
+      - m_Target: {fileID: 0}
         m_MethodName: PrintMovesLeft
         m_Mode: 1
         m_Arguments:

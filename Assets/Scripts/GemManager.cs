@@ -22,10 +22,6 @@ public class GemManager : MonoBehaviour
         }
     }
 
-    // private void Start()
-    // {
-    // }
-
     public SOGem GetGemOfType(Gem.GemType type)
     {
         foreach (SOGem g in scriptableObjects)

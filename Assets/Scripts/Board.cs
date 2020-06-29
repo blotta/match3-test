@@ -4,51 +4,45 @@ using System.Dynamic;
 using System.Linq;
 using UnityEngine;
 
-public class Board : MonoBehaviour
+public class Board
 {
-    public int width;
-    public int height;
-
-    private Gem.GemType[,] gGrid;
-
-    void Awake()
+    public static Gem.GemType[,] GetNewPlayableGrid(int width, int height)
     {
-        gGrid = new Gem.GemType[width, height];
-
-        PopulateGemGrid();
-
-        var matches = CheckMatches(gGrid);
-        while (matches.Count > 0 || !HasMovesLeft())
+        Gem.GemType[,] grid = GetRandomGrid(width, height);
+        var matches = CheckMatches(grid);
+        while (matches.Count > 0 || !HasMovesLeft(grid))
         {
-            // print($"Repopulating grid");
-
-            PopulateGemGrid();
-            matches = CheckMatches(gGrid);
+            grid = GetRandomGrid(width, height);
+            matches = CheckMatches(grid);
         }
+        return grid;
     }
 
-    void PopulateGemGrid()
+    public static Gem.GemType[,] GetRandomGrid(int width, int height)
     {
+        Gem.GemType[,] grid = new Gem.GemType[width, height];
         for (int i = 0; i < width; i++)
         {
-            for (int j = 0; j < height; j++)
+            for (int j = 0; j < width; j++)
             {
-                SOGem newGem = GemManager.Instance.GetRandomGem();
-                gGrid[i, j] = newGem.GemType;
+                grid[i, j] = GemManager.Instance.GetRandomGem().GemType;
             }
         }
-
+        return grid;
     }
 
-    public List<List<Vector2Int>> CheckMatches(Gem.GemType[,] grid)
+    public static List<List<Vector2Int>> CheckMatches(Gem.GemType[,] grid)
     {
+        int w = grid.GetLength(0);
+        int h = grid.GetLength(1);
+
         List<List<Vector2Int>> results = new List<List<Vector2Int>>();
         List<Vector2Int> currMatch = new List<Vector2Int>();
         List<Vector2Int> gemsAlreadyInAMatch = new List<Vector2Int>();
 
-        for (int i = 0; i < width; i++)
+        for (int i = 0; i < w; i++)
         {
-            for (int j = 0; j < height; j++)
+            for (int j = 0; j < h; j++)
             {
                 if (gemsAlreadyInAMatch.Contains(new Vector2Int(i, j)))
                 {
@@ -91,7 +85,7 @@ public class Board : MonoBehaviour
 
     // Returns a list of the neighbor GameObject references of the gems matching
     // the same type of the given gem (excluding the given gem)
-    public List<Vector2Int> SearchSameGemTypeNeighborsMock(Vector2Int gemPos, Gem.GemType[,] grid, ref List<Vector2Int> exclude)
+    public static List<Vector2Int> SearchSameGemTypeNeighborsMock(Vector2Int gemPos, Gem.GemType[,] grid, ref List<Vector2Int> exclude)
     {
         List<Vector2Int> ret = new List<Vector2Int>();
         int w = grid.GetLength(0);
@@ -136,34 +130,26 @@ public class Board : MonoBehaviour
         return ret;
     }
 
-    // Button On Click GUI callable
-    public void PrintMovesLeft()
-    {
-        if (HasMovesLeft())
-            print("There are moves left");
-        else
-            print("There are no moves left");
-    }
-
     // shifts rows and columns and checks for matches in each iteration
     // Returns true on the first match it finds, or false if there are no matches available.
-    public bool HasMovesLeft()
+    public static bool HasMovesLeft(Gem.GemType[,] grid)
     {
-        var mockGrid = GetGGridCopy();
-        var w = mockGrid.GetLength(0);
-        var h = mockGrid.GetLength(1);
+        // var mockGrid = GetGGridCopy();
+        var w = grid.GetLength(0);
+        var h = grid.GetLength(1);
 
         // check matches by shifting rows
         for (int row = 0; row <= h - 1; row++)
         {
-            Gem.GemType[,] shiftedGrid = GetGGridCopy();
+            // Gem.GemType[,] shiftedGrid = GetGGridCopy();
             for (int shiftCount = 1; shiftCount < w - 1; shiftCount++)
             {
                 // Get next shifted grid
-                shiftedGrid = MovedGridLine(shiftedGrid, row, Vector2Int.right);
+                // shiftedGrid = MovedGridLine(shiftedGrid, row, Vector2Int.right);
+                grid = MovedGridLine(grid, row, Vector2Int.right);
 
                 // Check for matches with a shifted grid
-                var matches = CheckMatches(shiftedGrid);
+                var matches = CheckMatches(grid);
                 // This is returning Count > 0 when it shouldn't
                 if (matches.Count > 0)
                 {
@@ -175,19 +161,21 @@ public class Board : MonoBehaviour
                     return true;
                 }
             }
+            grid = MovedGridLine(grid, row, Vector2Int.right);
         }
 
         // Check matches by shifting columns
         for (int col = 0; col <= w - 1; col++)
         {
-            Gem.GemType[,] shiftedGrid = GetGGridCopy();
+            // Gem.GemType[,] shiftedGrid = GetGGridCopy();
             for (int shiftCount = 1; shiftCount < h - 1; shiftCount++)
             {
                 // Get next shifted grid
-                shiftedGrid = MovedGridLine(shiftedGrid, col, Vector2Int.up);
+                // shiftedGrid = MovedGridLine(shiftedGrid, col, Vector2Int.up);
+                grid = MovedGridLine(grid, col, Vector2Int.up);
 
                 // Check for matches with a shifted grid
-                var matches = CheckMatches(shiftedGrid);
+                var matches = CheckMatches(grid);
                 if (matches.Count > 0)
                 {
                     // print($"Still game left (col {col} shift {shiftCount})");
@@ -198,12 +186,13 @@ public class Board : MonoBehaviour
                     return true;
                 }
             }
+            grid = MovedGridLine(grid, col, Vector2Int.up);
         }
 
         return false;
     }
 
-    public Gem.GemType[,] MovedGridLine(Gem.GemType[,] grid, int idx, Vector2Int direction)
+    public static Gem.GemType[,] MovedGridLine(Gem.GemType[,] grid, int idx, Vector2Int direction)
     {
         // Maybe unnecessary
         Gem.GemType[,] newGrid = grid.Clone() as Gem.GemType[,];
@@ -258,23 +247,5 @@ public class Board : MonoBehaviour
         }
 
         return newGrid;
-    }
-
-    public Gem.GemType[,] GetGGridCopy()
-    {
-        Gem.GemType[,] mockGrid = new Gem.GemType[width, height];
-        for (int i = 0; i < width; i++)
-        {
-            for (int j = 0; j < height; j++)
-            {
-                mockGrid[i, j] = gGrid[i, j];
-            }
-        }
-        return mockGrid;
-    }
-
-    public void UpdateGemTypeGrid(Gem.GemType[,] newGrid)
-    {
-        gGrid = newGrid;
     }
 }
