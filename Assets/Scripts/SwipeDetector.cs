@@ -22,6 +22,7 @@ public enum SwipeDirection
 
 public enum SwipePhase
 {
+    None,
     Swipping,
     Ended
 }

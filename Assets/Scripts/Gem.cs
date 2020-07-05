@@ -16,6 +16,5 @@ public class Gem : MonoBehaviour
     }
 
     public GemType gemType;
-    public Vector3 originalPosition;
     public Vector2Int gridPos;
 }

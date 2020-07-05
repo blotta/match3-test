@@ -4,7 +4,7 @@ using System.Dynamic;
 using System.Linq;
 using UnityEngine;
 
-public class Board
+public class BoardUtils
 {
     public static Gem.GemType[,] GetNewPlayableGrid(int width, int height)
     {
