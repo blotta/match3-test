@@ -102,7 +102,7 @@ public class BoardManager : MonoBehaviour
         if (matches.Count > 0)
         {
             waitPlayerInput = false;
-            gemGOGrid = BoardManager.UpdateGemGOGridFromWorldPos(gemGOGrid);
+            // gemGOGrid = BoardManager.UpdateGemGOGridFromWorldPos(gemGOGrid);
             this.stateMachine.ChangeState(new DeleteMatches(ref gemGOGrid, matches, OnDeleteMatchesDone));
         }
         else
@@ -204,9 +204,9 @@ public class BoardManager : MonoBehaviour
         // print($"World Bounds: {worldBoardBound}");
     }
 
-    public static GameObject[,] UpdateGemGOGridFromWorldPos(GameObject[,] oldGrid)
+    public void UpdateGemGOGridFromWorldPos()
     {
-        GameObject[,] newGrid = new GameObject[oldGrid.GetLength(0), oldGrid.GetLength(1)];
+        GameObject[,] newGrid = new GameObject[gemGOGrid.GetLength(0), gemGOGrid.GetLength(1)];
         for (int i = 0; i < newGrid.GetLength(0); i++)
         {
             for (int j = 0; j < newGrid.GetLength(1); j++)
@@ -215,7 +215,7 @@ public class BoardManager : MonoBehaviour
             }
         }
 
-        foreach (var gem in oldGrid)
+        foreach (var gem in gemGOGrid)
         {
             if (gem != null)
             {
@@ -224,7 +224,7 @@ public class BoardManager : MonoBehaviour
                 newGrid[gridPos.x, gridPos.y] = gem;
             }
         }
-        return newGrid;
+        this.gemGOGrid = newGrid;
     }
 
     public static GameObject[] GetGemColumnS(GameObject gem, GameObject[,] grid)

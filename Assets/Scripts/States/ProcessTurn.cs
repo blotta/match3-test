@@ -44,6 +44,11 @@ public class ProcessTurn : IState
                 _gemGOGrid = newGOGrid;
             }
         }
+        else
+        {
+            // _gemGOGrid = BoardManager.UpdateGemGOGridFromWorldPos(_gemGOGrid);
+            BoardManager.Instance.UpdateGemGOGridFromWorldPos();
+        }
 
         _callback(matches);
     }
