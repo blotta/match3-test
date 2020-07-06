@@ -29,9 +29,37 @@ public class BoardManager : MonoBehaviour
 
     private bool waitPlayerInput = false;
 
-    [SerializeField] private int round;
-    [SerializeField] private int score;
-    [SerializeField] private int targetScore;
+    public static event Action<float, float> OnScoreUpdated = delegate { };
+    public static event Action<float> OnTimerUpdated = delegate { };
+
+    public float baseTargetPoints;
+    public float baseTargetPointsRoundMultiplier;
+    public int round;
+
+    [SerializeField] private float _countdownSeconds;
+    public float countdownSeconds
+    {
+        get { return _countdownSeconds; }
+        set
+        {
+            _countdownSeconds = value;
+            OnTimerUpdated(_countdownSeconds);
+        }
+    }
+
+    private float _targetScore;
+
+    private float _score;
+    public float score
+    {
+        get { return _score; }
+        set
+        {
+            _score = value;
+            Debug.Log($"Broadcasting score: {_score}");
+            OnScoreUpdated(_score, _targetScore);
+        }
+    }
 
     private void Awake()
     {
@@ -50,12 +78,17 @@ public class BoardManager : MonoBehaviour
     private void Start()
     {
         ResetGemGOGrid(); // Sets gemGOGrid and worldBoardBound
+
         waitPlayerInput = true;
+        score = 0f;
+        _targetScore = baseTargetPoints * round * baseTargetPointsRoundMultiplier;
+
         this.stateMachine.ChangeState(new PlayerTurn(gemGOGrid, worldBoardBound, OnInputEnded));
     }
 
     private void Update()
     {
+        countdownSeconds -= Time.deltaTime;
         this.stateMachine.ExecuteStateUpdate();
     }
 

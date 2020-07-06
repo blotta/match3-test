@@ -63,7 +63,7 @@ public class DeleteMatches : IState
     {
         _fadeCoroutine = FadeGems(_gemsToDelete);
         // Any MonoBehaviour instance
-        GemManager.Instance.StartCoroutine(_fadeCoroutine);
+        BoardManager.Instance.StartCoroutine(_fadeCoroutine);
     }
 
     public void Execute()
@@ -80,6 +80,20 @@ public class DeleteMatches : IState
                 MonoBehaviour.Destroy(_gemsToDelete[i]);
             }
 
+            // Scoring
+            float addToScore = 0f;
+            foreach (var gemGroup in _matches)
+            {
+                // Every group is 1 point + 0.5 per extra gem in group
+                addToScore += 1 + (gemGroup.Count - 3) * 0.5f;
+            }
+
+            // multiply addToScore by 1.1 for 2 matches, 1.2 for 3 matches, etc
+            addToScore *= (1 + (_matches.Count - 1) / 10f);
+            Debug.Log($"Add to Score: {addToScore}");
+
+            // Apply score
+            BoardManager.Instance.score += addToScore;
 
             _doneCallback(_matches);
         }
