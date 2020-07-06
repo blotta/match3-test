@@ -1,7 +1,9 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using UnityEngine;
 
 public class BoardUtils
@@ -29,6 +31,50 @@ public class BoardUtils
             }
         }
         return grid;
+    }
+
+    // Returns a playable grid made with the same given gems, and a dictionary with the previous
+    // and new grid positions for each gem (as key and value, respectively)
+    // Returns the same grid if given grid has no matches and has moves left
+    public static (Gem.GemType[,], Dictionary<Vector2Int, Vector2Int>) ShuffleDiff(Gem.GemType[,] grid, bool forceShuffle = false)
+    {
+        int w = grid.GetLength(0);
+        int h = grid.GetLength(1);
+        Dictionary<Vector2Int, Vector2Int> diffs = new Dictionary<Vector2Int, Vector2Int>();
+        Gem.GemType[,] newGrid = (Gem.GemType[,])grid.Clone();
+        List<Vector2Int> alreadyAssigned = new List<Vector2Int>();
+        var matches = CheckMatches(newGrid);
+        if (forceShuffle)
+        {
+            // "Trick" function to get into the loop
+            matches = new List<List<Vector2Int>>() { new List<Vector2Int>() { new Vector2Int(0, 0) } };
+        }
+
+        while (matches.Count > 0 || !HasMovesLeft(newGrid))
+        {
+            // generate new possible grid
+            alreadyAssigned.Clear();
+            diffs.Clear();
+            for (int i = 0; i < w; i++)
+            {
+                for (int j = 0; j < h; j++)
+                {
+                    Vector2Int newPos = new Vector2Int(UnityEngine.Random.Range(0, w), UnityEngine.Random.Range(0, h));
+                    while (alreadyAssigned.Contains(newPos))
+                    {
+                        newPos = new Vector2Int(UnityEngine.Random.Range(0, w), UnityEngine.Random.Range(0, h));
+                    }
+                    alreadyAssigned.Add(newPos);
+                    newGrid[newPos.x, newPos.y] = grid[i, j];
+                    diffs.Add(new Vector2Int(i, j), newPos);
+                }
+            }
+
+            // Test new grid
+            matches = CheckMatches(newGrid);
+        }
+
+        return (newGrid, diffs);
     }
 
     public static List<List<Vector2Int>> CheckMatches(Gem.GemType[,] grid)

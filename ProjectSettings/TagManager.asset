@@ -16,11 +16,11 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
-  - 
-  - 
+  - Background
+  - BehindGems
+  - Gems
+  - InFrontOfGems
+  - GameUI
   - 
   - 
   - 
@@ -39,6 +39,15 @@ TagManager:
   - 
   - 
   m_SortingLayers:
+  - name: Background
+    uniqueID: 2108378425
+    locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Gems
+    uniqueID: 2533949483
+    locked: 0
+  - name: UI
+    uniqueID: 3921376203
     locked: 0

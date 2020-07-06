@@ -29,6 +29,10 @@ public class BoardManager : MonoBehaviour
 
     private bool waitPlayerInput = false;
 
+    [SerializeField] private int round;
+    [SerializeField] private int score;
+    [SerializeField] private int targetScore;
+
     private void Awake()
     {
 
@@ -57,7 +61,7 @@ public class BoardManager : MonoBehaviour
 
     private void OnInputEnded()
     {
-        this.stateMachine.ChangeState(new ProcessTurn(gemGOGrid, OnProcessEnded));
+        this.stateMachine.ChangeState(new ProcessTurn(ref gemGOGrid, OnProcessEnded));
     }
 
     private void OnProcessEnded(List<List<Vector2Int>> matches)
@@ -85,7 +89,7 @@ public class BoardManager : MonoBehaviour
         }
         else
         {
-            this.stateMachine.ChangeState(new ProcessTurn(gemGOGrid, OnProcessEnded));
+            this.stateMachine.ChangeState(new ProcessTurn(ref gemGOGrid, OnProcessEnded));
         }
     }
 
@@ -96,6 +100,22 @@ public class BoardManager : MonoBehaviour
 
     private void OnPushDownAndCreateGemsDone()
     {
+        this.stateMachine.ChangeState(new AnimGems(gemGOGrid, OnAnimGemsEnded));
+    }
+
+    public void ShuffleJustBecause()
+    {
+        var (newGrid, diffs) = BoardUtils.ShuffleDiff(BoardManager.GemArrayFromGridPos(gemGOGrid), true);
+        GameObject[,] newGOGrid = new GameObject[newGrid.GetLength(0), newGrid.GetLength(1)];
+        foreach (var diff in diffs)
+        {
+            var oldPos = diff.Key;
+            var newPos = diff.Value;
+            newGOGrid[newPos.x, newPos.y] = gemGOGrid[oldPos.x, oldPos.y];
+            newGOGrid[newPos.x, newPos.y].GetComponent<Gem>().gridPos = newPos;
+            // world position will be updated within the AnimGems state
+        }
+        gemGOGrid = newGOGrid;
         this.stateMachine.ChangeState(new AnimGems(gemGOGrid, OnAnimGemsEnded));
     }
 

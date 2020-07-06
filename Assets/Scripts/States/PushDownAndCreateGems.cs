@@ -57,7 +57,7 @@ public class PushDownAndCreateGems : IState
                 GameObject gem = BoardManager.Instance.GemFactory(
                     GemManager.Instance.GetRandomGem().GemType,
                     new Vector2Int(i, j), // emptySpot,
-                    BoardManager.GridToWorldPos(new Vector2Int(i, 0)) + Vector3.up * 7);
+                    BoardManager.GridToWorldPos(new Vector2Int(i, j)) + Vector3.up * _gemGOGrid.GetLength(1));
 
                 _gemGOGrid[i, j] = gem;
             }
