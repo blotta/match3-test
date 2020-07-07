@@ -26,6 +26,6 @@ public class TimerUI : MonoBehaviour
     private string FormattedTime(float time)
     {
         var span = TimeSpan.FromSeconds(Mathf.Max(new[] { 0, time }));
-        return span.ToString(@"mm\:ss");
+        return span.ToString(@"m\:ss");
     }
 }

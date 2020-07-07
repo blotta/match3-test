@@ -13,7 +13,7 @@ public class ScoreSliderUI : MonoBehaviour
         BoardManager.OnScoreUpdated += BoardManager_OnScoreUpdated;
         _scorePercent = 0;
         _slider = GetComponent<Slider>();
-        // _slider.value = 0f;
+         _slider.value = 0f;
         // _slider.minValue = 0f;
         // _slider.maxValue = 1f;
         Debug.Log($"Slider start {_scorePercent}, {_slider.value}");

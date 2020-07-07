@@ -102,7 +102,6 @@ public class BoardManager : MonoBehaviour
         if (matches.Count > 0)
         {
             waitPlayerInput = false;
-            // gemGOGrid = BoardManager.UpdateGemGOGridFromWorldPos(gemGOGrid);
             this.stateMachine.ChangeState(new DeleteMatches(ref gemGOGrid, matches, OnDeleteMatchesDone));
         }
         else
