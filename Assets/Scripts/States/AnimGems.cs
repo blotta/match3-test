@@ -54,7 +54,7 @@ public class AnimGems : IState
             else
             {
                 // Move half a unit/sec
-                Vector3 newPos = gem.transform.position + (targetPos - gem.transform.position).normalized * Time.deltaTime * 12f;
+                Vector3 newPos = gem.transform.position + (targetPos - gem.transform.position).normalized * Time.deltaTime * 17f;
                 gem.transform.position = newPos;
             }
         }

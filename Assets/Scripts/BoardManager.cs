@@ -27,39 +27,19 @@ public class BoardManager : MonoBehaviour
 
     private StateMachine stateMachine = new StateMachine();
 
-    private bool waitPlayerInput = false;
+    private bool waitPlayerInput;
+    private bool stageStarted;
 
-    public static event Action<float, float> OnScoreUpdated = delegate { };
-    public static event Action<float> OnTimerUpdated = delegate { };
+    public static event Action OnScoreUpdated = delegate { };
+    public static event Action OnTimerUpdated = delegate { };
+    public static event Action<StageData> OnStageDataReady = delegate { };
 
     public float baseTargetPoints;
     public float baseTargetPointsRoundMultiplier;
-    public int round;
 
-    [SerializeField] private float _countdownSeconds;
-    public float countdownSeconds
-    {
-        get { return _countdownSeconds; }
-        set
-        {
-            _countdownSeconds = value;
-            OnTimerUpdated(_countdownSeconds);
-        }
-    }
-
-    private float _targetScore;
-
-    private float _score;
-    public float score
-    {
-        get { return _score; }
-        set
-        {
-            _score = value;
-            Debug.Log($"Broadcasting score: {_score}");
-            OnScoreUpdated(_score, _targetScore);
-        }
-    }
+    [SerializeField]
+    StageData _stageData;
+    public StageData StageData => _stageData;
 
     private void Awake()
     {
@@ -72,24 +52,41 @@ public class BoardManager : MonoBehaviour
             _instance = this;
         }
 
-        gemGOGrid = new GameObject[width, height];
+        ResetGemGOGrid();
+        UpdateWorldBounds();
+
+        foreach (var gem in gemGOGrid)
+        {
+            gem.transform.position =
+                Camera.main.ScreenToWorldPoint(new Vector3(-30, Screen.height/2, 0));
+        }
+
+        if (_stageData.stage <= 0)
+             _stageData.stage = GameManager.Instance.currentStage;
+
+        _stageData.countdownSeconds = _stageData.totalCountdownSeconds;
+
+        waitPlayerInput = true;
+        stageStarted = false;
     }
 
     private void Start()
     {
-        ResetGemGOGrid(); // Sets gemGOGrid and worldBoardBound
-
-        waitPlayerInput = true;
-        score = 0f;
-        _targetScore = baseTargetPoints * round * baseTargetPointsRoundMultiplier;
-
-        this.stateMachine.ChangeState(new PlayerTurn(gemGOGrid, worldBoardBound, OnInputEnded));
+        this.stateMachine.ChangeState(new StageStart(OnStageStartEnded));
     }
 
     private void Update()
     {
-        countdownSeconds -= Time.deltaTime;
         this.stateMachine.ExecuteStateUpdate();
+        if (stageStarted)
+            TickTimer();
+    }
+
+    private void OnStageStartEnded()
+    {
+        stageStarted = true;
+        // this.stateMachine.ChangeState(new PlayerTurn(gemGOGrid, worldBoardBound, OnInputEnded));
+        this.stateMachine.ChangeState(new AnimGems(gemGOGrid, OnAnimGemsEnded));
     }
 
     private void OnInputEnded()
@@ -151,7 +148,19 @@ public class BoardManager : MonoBehaviour
         this.stateMachine.ChangeState(new AnimGems(gemGOGrid, OnAnimGemsEnded));
     }
 
-    void ResetGemGOGrid()
+    public void TickTimer()
+    {
+        _stageData.countdownSeconds -= Time.deltaTime;
+        OnTimerUpdated();
+    }
+
+    public void SetScore(float score)
+    {
+        _stageData.score = score;
+        OnScoreUpdated();
+    }
+
+    public void ResetGemGOGrid()
     {
         // Destroy GOs in current grid
         if (gemGOGrid != null)
@@ -184,7 +193,10 @@ public class BoardManager : MonoBehaviour
                 gemGOGrid[i, j] = gem;
             }
         }
+    }
 
+    public void UpdateWorldBounds()
+    {
         // World Bounds
         var blGem = gemGOGrid[0, 0];
         var blGemBounds = blGem.GetComponent<SpriteRenderer>().sprite.bounds;

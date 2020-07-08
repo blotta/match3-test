@@ -6,21 +6,23 @@ using UnityEngine;
 
 public class TimerUI : MonoBehaviour
 {
-    private int _seconds;
     private TMP_Text _timerText;
 
     void Start()
     {
         BoardManager.OnTimerUpdated += BoardManager_OnTimerUpdated;
-        _seconds = (int)Math.Floor(BoardManager.Instance.countdownSeconds);
         _timerText = GetComponent<TMP_Text>();
-        _timerText.SetText(FormattedTime(BoardManager.Instance.countdownSeconds));
+        _timerText.SetText(FormattedTime(BoardManager.Instance.StageData.totalCountdownSeconds));
     }
 
-    private void BoardManager_OnTimerUpdated(float timer)
+    private void OnDestroy()
     {
-        // int seconds = (int)Math.Floor(timer);
-        _timerText.SetText(FormattedTime(timer));
+        BoardManager.OnTimerUpdated -= BoardManager_OnTimerUpdated;
+    }
+
+    private void BoardManager_OnTimerUpdated()
+    {
+        _timerText.SetText(FormattedTime(BoardManager.Instance.StageData.countdownSeconds));
     }
 
     private string FormattedTime(float time)

@@ -13,10 +13,7 @@ public class ScoreSliderUI : MonoBehaviour
         BoardManager.OnScoreUpdated += BoardManager_OnScoreUpdated;
         _scorePercent = 0;
         _slider = GetComponent<Slider>();
-         _slider.value = 0f;
-        // _slider.minValue = 0f;
-        // _slider.maxValue = 1f;
-        Debug.Log($"Slider start {_scorePercent}, {_slider.value}");
+        _slider.value = 0f;
     }
 
     private void OnDestroy()
@@ -24,13 +21,12 @@ public class ScoreSliderUI : MonoBehaviour
         BoardManager.OnScoreUpdated -= BoardManager_OnScoreUpdated;
     }
 
-    private void BoardManager_OnScoreUpdated(float score, float targetScore)
+    private void BoardManager_OnScoreUpdated()
     {
-        _scorePercent = score / targetScore;
-        Debug.Log($"Slider score update {_scorePercent}, {score}, {targetScore}");
+        _scorePercent = BoardManager.Instance.StageData.score / BoardManager.Instance.StageData.targetScore;
+        // Debug.Log($"Slider score update {_scorePercent}, {score}, {targetScore}");
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (_scorePercent != _slider.value)

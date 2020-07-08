@@ -93,7 +93,8 @@ public class DeleteMatches : IState
             Debug.Log($"Add to Score: {addToScore}");
 
             // Apply score
-            BoardManager.Instance.score += addToScore;
+            // BoardManager.Instance.score += addToScore;
+            BoardManager.Instance.SetScore(BoardManager.Instance.StageData.score + addToScore);
 
             _doneCallback(_matches);
         }
