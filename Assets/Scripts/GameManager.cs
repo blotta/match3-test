@@ -21,13 +21,20 @@ public class GameManager : MonoBehaviour
         {
             _instance = this;
         }
+
+        // Load save
+        stagesCleared = 0;
     }
 
     private void Start()
     {
-        // Load save
-        stagesCleared = 0;
         currentStage = stagesCleared + 1;
+    }
+
+    public void LoadStage(int stage = -1)
+    {
+        currentStage = stage <= 0 ? currentStage : stage;
+        LoadGame();
     }
 
     public void LoadGame()
