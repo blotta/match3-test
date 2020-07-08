@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class MenuCanvasUI : MonoBehaviour
 {
@@ -9,13 +10,25 @@ public class MenuCanvasUI : MonoBehaviour
 
     private IEnumerator _panelSlideCoroutine = null;
 
-    void Start()
+
+    public void PressedPlay()
     {
+        GameManager.Instance.LoadStage();
     }
 
-    void Update()
+    public void PressedQuit()
     {
-        print($"m {_mainMenuPanel.transform.position} s {_stagesMenuPanel.transform.position}");
+        // GameManager.Instance.LoadStage();
+    }
+
+    public void ShowStages()
+    {
+        SlideMenuPanels(true);
+    }
+
+    public void ShowMainMenu()
+    {
+        SlideMenuPanels(false);
     }
 
     public void SlideMenuPanels(bool slideLeft)
@@ -32,6 +45,8 @@ public class MenuCanvasUI : MonoBehaviour
     {
         Vector3 targetPos = _mainMenuPanel.transform.position +
             (slideLeft ? Vector3.left * Screen.width :  Vector3.right * Screen.width);
+
+        print($"targetPos {targetPos}");
 
         while (_mainMenuPanel.transform.position != targetPos)
         {

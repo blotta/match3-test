@@ -37,8 +37,13 @@ public class GameManager : MonoBehaviour
         LoadGame();
     }
 
-    public void LoadGame()
+    private void LoadGame()
     {
         SceneManager.LoadScene("Game");
+    }
+
+    public void LoadMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 }
