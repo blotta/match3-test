@@ -23,6 +23,7 @@ public class BoardManager : MonoBehaviour
     private Rect worldBoardBound;
     
     public GameObject gemPrefab;
+    public GameObject destroyGemPartSysPrefab;
 
     [SerializeField] static float DistanceBetweenGems = 1f;
 
@@ -363,9 +364,20 @@ public class BoardManager : MonoBehaviour
         gem.GetComponent<Gem>().gridPos = gridPos;
         gem.name = $"-- {gem.GetComponent<Gem>().gemType} --";
 
+        // gem.GetComponent<ParticleSystem>().
+
         if (updateGrid)
             BoardManager.Instance.gemGOGrid[gridPos.x, gridPos.y] = gem;
 
         return gem;
     }
+
+    public void SpawnDestroyParticleEffect(Vector3 pos)
+    {
+        var obj = Instantiate(destroyGemPartSysPrefab, pos, Quaternion.identity);
+        var partsys = obj.GetComponent<ParticleSystem>();
+        partsys.Play();
+        Destroy(obj, 2f);
+    }
+
 }

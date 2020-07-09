@@ -8,8 +8,9 @@ public class DeleteMatches : IState
     private GameObject[,] _gemGOGrid;
     private List<List<Vector2Int>> _matches;
     private List<GameObject> _gemsToDelete;
-    private IEnumerator _fadeCoroutine;
     private Action<List<List<Vector2Int>>> _doneCallback;
+    public delegate IEnumerator GemEffectCoroutine(GameObject gem, Action callback);
+    private IEnumerator _vfxCoroutine;
 
     public DeleteMatches(ref GameObject[,] gemGOGrid, List<List<Vector2Int>> matches, Action<List<List<Vector2Int>>> doneCallback)
     {
@@ -27,51 +28,64 @@ public class DeleteMatches : IState
         }
     }
 
-    private IEnumerator FadeGems(List<GameObject> gems)
+    IEnumerator FadeGem(GameObject gem, Action callback)
     {
-        List<GameObject> fadedGems = new List<GameObject>();
-
-        while (gems.Count > fadedGems.Count)
+        var sprite = gem.GetComponent<SpriteRenderer>();
+        while (sprite.color.a > 0)
         {
-            foreach (var gem in gems)
+            Color newColor = sprite.color;
+
+            newColor.a -= 10f * Time.deltaTime;
+            if (newColor.a <= 0.1f)
+                newColor.a = 0f;
+
+            sprite.color = newColor;
+
+            yield return null;
+        }
+
+        SoundManager.Instance.PlaySound("select");
+        BoardManager.Instance.SpawnDestroyParticleEffect(gem.transform.position);
+
+        callback();
+    }
+
+    IEnumerator SerialEffectGems(List<GameObject> gems, GemEffectCoroutine e)
+    {
+        IEnumerator effectC;
+        List<GameObject> fadedGems = new List<GameObject>();
+        foreach (var gem in gems)
+        {
+            effectC = e(gem, () => { effectC = null; });
+            BoardManager.Instance.StartCoroutine(effectC);
+
+            while (effectC != null)
             {
-                var sprite = gem.GetComponent<SpriteRenderer>();
-                Color newColor = sprite.color;
-                if (sprite.color.a <= 0f)
-                {
-                    continue;
-                }
-                else if (sprite.color.a <= 0.1f)
-                {
-                    newColor.a = 0f;
-                    fadedGems.Add(gem);
-                }
-                else
-                {
-                    newColor.a -= 1.5f * Time.deltaTime;
-                }
-                sprite.color = newColor;
+                yield return null;
             }
 
             yield return null;
         }
 
-        _fadeCoroutine = null;
+        _vfxCoroutine = null;
     }
 
     public void Enter()
     {
-        _fadeCoroutine = FadeGems(_gemsToDelete);
+        Vector3 newScale = new Vector3(1.2f, 1.2f, 1);
+        foreach (var gem in _gemsToDelete)
+            gem.transform.localScale = newScale;
+
+        _vfxCoroutine = SerialEffectGems(_gemsToDelete, FadeGem);
         // Any MonoBehaviour instance
-        BoardManager.Instance.StartCoroutine(_fadeCoroutine);
+        BoardManager.Instance.StartCoroutine(_vfxCoroutine);
     }
 
     public void Execute()
     {
-        // if animation is done
-        if (_fadeCoroutine == null)
+        if (_vfxCoroutine == null)
         {
-            // TODO: Score
+            // Destroy Gems
             for (int i = 0; i < _gemsToDelete.Count; i++)
             {
                 var gridPos = _gemsToDelete[i].GetComponent<Gem>().gridPos;
