@@ -11,25 +11,38 @@ public class StagesMenu : MonoBehaviour
 
     void Start()
     {
-        PopulateContent();
+        PopulateContent(GameManager.saveData.stages);
     }
 
-    public void PopulateContent()
+    public void PopulateContent(List<StageData> stagesData)
     {
         foreach (Transform child in _content.transform)
         {
             Destroy(child.gameObject);
         }
 
-        for (int i = 1; i <= GameManager.Instance.stagesCleared + 1; i++)
+        for (int i = 1; i <= stagesData.Count; i++)
         {
+            print($"Setting up button {stagesData[i - 1].stage}");
+            int stageNum = stagesData[i - 1].stage;
             var button = Instantiate(_stageButtonPrefab, _content.transform);
-            button.name = $"Stage {i}";
-            button.GetComponentInChildren<TMP_Text>().text = $"{i}";
+            button.name = $"Stage {stageNum}";
+            button.GetComponentInChildren<TMP_Text>().text = $"{stageNum}";
             button.GetComponent<Button>().onClick.AddListener(() =>
             {
-                GameManager.Instance.LoadStage(i);
+                print($"Trying to load stage {stageNum}");
+                GameManager.Instance.LoadStage(stageNum);
             });
         }
+
+        // One more for uncleared/next level 
+        var nbutton = Instantiate(_stageButtonPrefab, _content.transform);
+        nbutton.name = $"Stage {stagesData.Count + 1}";
+        nbutton.GetComponentInChildren<TMP_Text>().text = $"{stagesData.Count + 1}";
+        nbutton.GetComponent<Button>().onClick.AddListener(() =>
+        {
+            GameManager.Instance.LoadStage(stagesData.Count + 1);
+            print($"Loading stage {stagesData.Count + 1}");
+        });
     }
 }

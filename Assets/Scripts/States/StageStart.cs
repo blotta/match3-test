@@ -6,7 +6,7 @@ using UnityEngine;
 
 public class StageStart : IState
 {
-    private IEnumerator _waitC;
+    private IEnumerator _animTextC;
     private RectTransform _stageStartTextT;
     private Action _doneCallback;
 
@@ -20,13 +20,13 @@ public class StageStart : IState
 
     public void Enter()
     {
-        _waitC = animateStageText();
-        BoardManager.Instance.StartCoroutine(_waitC);
+        _animTextC = animateStageText();
+        BoardManager.Instance.StartCoroutine(_animTextC);
     }
 
     public void Execute()
     {
-        if (_waitC == null)
+        if (_animTextC == null)
             _doneCallback();
     }
 
@@ -61,7 +61,7 @@ public class StageStart : IState
             yield return null;
         }
 
-        _waitC = null;
+        _animTextC = null;
     }
 
     public void Exit()

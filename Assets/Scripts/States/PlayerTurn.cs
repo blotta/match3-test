@@ -36,6 +36,12 @@ public class PlayerTurn : IState
     {
         // Debug.Log($"Swipe Phase: {_swipeData.Phase}");
 
+        // Get out on lose condition
+        if (BoardManager.Instance.StageData.countdownSeconds <= 0)
+        {
+            _callback();
+        }
+
         if (_swipeData.Phase == SwipePhase.None)
         {
             return;

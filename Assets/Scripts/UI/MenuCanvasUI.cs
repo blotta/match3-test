@@ -13,7 +13,7 @@ public class MenuCanvasUI : MonoBehaviour
 
     public void PressedPlay()
     {
-        GameManager.Instance.LoadStage();
+        GameManager.Instance.LoadLastAvailableStage();
     }
 
     public void PressedQuit()

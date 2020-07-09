@@ -48,7 +48,7 @@ public class DeleteMatches : IState
                 }
                 else
                 {
-                    newColor.a -= 1f * Time.deltaTime;
+                    newColor.a -= 1.5f * Time.deltaTime;
                 }
                 sprite.color = newColor;
             }

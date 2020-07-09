@@ -8,4 +8,14 @@ public class GameCanvasUI : MonoBehaviour
     {
         GameManager.Instance.LoadMenu();
     }
+
+    public void PressedNextStage()
+    {
+        GameManager.Instance.LoadNextStage();
+    }
+
+    public void PressedRetryStage()
+    {
+        GameManager.Instance.LoadStage();
+    }
 }

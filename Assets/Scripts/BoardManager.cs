@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 using UnityEngine;
 
 public class BoardManager : MonoBehaviour
@@ -29,13 +30,15 @@ public class BoardManager : MonoBehaviour
 
     private bool waitPlayerInput;
     private bool stageStarted;
+    private bool stageCleared;
+    private bool stageFailed;
 
     public static event Action OnScoreUpdated = delegate { };
     public static event Action OnTimerUpdated = delegate { };
     public static event Action<StageData> OnStageDataReady = delegate { };
 
-    public float baseTargetPoints;
-    public float baseTargetPointsRoundMultiplier;
+    // public float baseTargetPoints;
+    // public float baseTargetPointsRoundMultiplier;
 
     [SerializeField]
     StageData _stageData;
@@ -68,6 +71,8 @@ public class BoardManager : MonoBehaviour
 
         waitPlayerInput = true;
         stageStarted = false;
+        stageCleared = false;
+        stageFailed = false;
     }
 
     private void Start()
@@ -78,7 +83,7 @@ public class BoardManager : MonoBehaviour
     private void Update()
     {
         this.stateMachine.ExecuteStateUpdate();
-        if (stageStarted)
+        if (stageStarted && !stageCleared)
             TickTimer();
     }
 
@@ -91,7 +96,14 @@ public class BoardManager : MonoBehaviour
 
     private void OnInputEnded()
     {
-        this.stateMachine.ChangeState(new ProcessTurn(ref gemGOGrid, OnProcessEnded));
+        if (stageFailed)
+        {
+            this.stateMachine.ChangeState(new AnimGems(gemGOGrid, OnAnimGemsEnded));
+        }
+        else
+        {
+            this.stateMachine.ChangeState(new ProcessTurn(ref gemGOGrid, OnProcessEnded));
+        }
     }
 
     private void OnProcessEnded(List<List<Vector2Int>> matches)
@@ -111,8 +123,13 @@ public class BoardManager : MonoBehaviour
 
     private void OnAnimGemsEnded()
     {
-        if (waitPlayerInput)
+        if (stageCleared || stageFailed)
         {
+            this.stateMachine.ChangeState(new StageEnded(stageCleared));
+        }
+        else if (waitPlayerInput)
+        {
+
             this.stateMachine.ChangeState(new PlayerTurn(gemGOGrid, worldBoardBound, OnInputEnded));
             waitPlayerInput = false;
         }
@@ -130,6 +147,11 @@ public class BoardManager : MonoBehaviour
     private void OnPushDownAndCreateGemsDone()
     {
         this.stateMachine.ChangeState(new AnimGems(gemGOGrid, OnAnimGemsEnded));
+    }
+
+    private void OnStageClearedDone()
+    {
+
     }
 
     public void ShuffleJustBecause()
@@ -150,14 +172,31 @@ public class BoardManager : MonoBehaviour
 
     public void TickTimer()
     {
-        _stageData.countdownSeconds -= Time.deltaTime;
+        // _stageData.countdownSeconds -= Time.deltaTime;
+        if (_stageData.countdownSeconds > 0f)
+            _stageData.countdownSeconds -= Time.deltaTime;
+        else
+        {
+            _stageData.countdownSeconds = 0f;
+            stageFailed = true;
+        }
         OnTimerUpdated();
+        // if (_stageData.countdownSeconds <= 0f)
+        // {
+        //     stageFailed = true;
+        // }
     }
 
     public void SetScore(float score)
     {
-        _stageData.score = score;
+        if (stageFailed)
+            return;
+        _stageData.score = Mathf.Clamp(score, 0, _stageData.targetScore);
         OnScoreUpdated();
+        if (_stageData.score >= _stageData.targetScore)
+        {
+            stageCleared = true;
+        }
     }
 
     public void ResetGemGOGrid()
