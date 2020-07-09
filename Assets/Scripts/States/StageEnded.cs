@@ -30,7 +30,15 @@ public class StageEnded : IState
         _animPanelC = CenterPanel(_stageEndedPanel);
         BoardManager.Instance.StartCoroutine(_animPanelC);
 
-        GameManager.Instance.StageCleared(BoardManager.Instance.StageData);
+        if (_success)
+        {
+            SoundManager.Instance.PlaySound("clear");
+            GameManager.Instance.StageCleared(BoardManager.Instance.StageData);
+        }
+        else
+        {
+            SoundManager.Instance.PlaySound("swap");
+        }
     }
 
     public void Execute()

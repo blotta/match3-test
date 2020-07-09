@@ -14,21 +14,25 @@ public class MenuCanvasUI : MonoBehaviour
     public void PressedPlay()
     {
         GameManager.Instance.LoadLastAvailableStage();
+        SoundManager.Instance.PlaySound("select");
     }
 
     public void PressedQuit()
     {
         // GameManager.Instance.LoadStage();
+        SoundManager.Instance.PlaySound("select");
     }
 
     public void ShowStages()
     {
         SlideMenuPanels(true);
+        SoundManager.Instance.PlaySound("select");
     }
 
     public void ShowMainMenu()
     {
         SlideMenuPanels(false);
+        SoundManager.Instance.PlaySound("select");
     }
 
     public void SlideMenuPanels(bool slideLeft)

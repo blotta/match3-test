@@ -32,6 +32,7 @@ public class StagesMenu : MonoBehaviour
             {
                 print($"Trying to load stage {stageNum}");
                 GameManager.Instance.LoadStage(stageNum);
+                SoundManager.Instance.PlaySound("select");
             });
         }
 
