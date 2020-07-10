@@ -9,6 +9,8 @@ public class AnimGems : IState
     GameObject[,] _gemGOGrid;
     Action _callback;
 
+    private float _speed = 15f;
+
     // bool _animationDone = false;
 
     public AnimGems(GameObject[,] gemGOGrid, Action callback)
@@ -53,7 +55,7 @@ public class AnimGems : IState
             else
             {
                 // Move half a unit/sec
-                Vector3 newPos = gem.transform.position + (targetPos - gem.transform.position).normalized * Time.deltaTime * 25f;
+                Vector3 newPos = Vector3.Lerp(gem.transform.position, targetPos, Time.deltaTime * _speed);
                 gem.transform.position = newPos;
             }
         }
