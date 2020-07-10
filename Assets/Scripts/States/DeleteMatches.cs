@@ -104,7 +104,6 @@ public class DeleteMatches : IState
 
             // multiply addToScore by 1.1 for 2 matches, 1.2 for 3 matches, etc
             addToScore *= (1 + (_matches.Count - 1) / 10f);
-            Debug.Log($"Add to Score: {addToScore}");
 
             // Apply score
             // BoardManager.Instance.score += addToScore;

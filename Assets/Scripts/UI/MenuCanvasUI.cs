@@ -21,6 +21,7 @@ public class MenuCanvasUI : MonoBehaviour
     {
         // GameManager.Instance.LoadStage();
         SoundManager.Instance.PlaySound("select");
+        GameManager.Instance.QuitGame();
     }
 
     public void ShowStages()
@@ -49,8 +50,6 @@ public class MenuCanvasUI : MonoBehaviour
     {
         Vector3 targetPos = _mainMenuPanel.transform.position +
             (slideLeft ? Vector3.left * Screen.width :  Vector3.right * Screen.width);
-
-        print($"targetPos {targetPos}");
 
         while (_mainMenuPanel.transform.position != targetPos)
         {

@@ -36,30 +36,27 @@ public class StageStart : IState
 
         Vector3 startPos = _stageStartTextT.transform.position;
         Vector3 endPos = new Vector3(Screen.width / 2, Screen.height / 2, startPos.z);
+        float closeEnoughDist = Vector3.Distance(startPos, endPos)/1000f;
 
         float speed = 10f;
 
-        while (_stageStartTextT.transform.position != endPos)
+        while (Vector3.Distance(_stageStartTextT.transform.position, endPos) > closeEnoughDist)
         {
             _stageStartTextT.transform.position = Vector3.Lerp(_stageStartTextT.transform.position, endPos, Time.deltaTime * speed);
-            if (Vector3.Distance(_stageStartTextT.transform.position, endPos) < 0.05f)
-            {
-                _stageStartTextT.transform.position = endPos;
-            }
             yield return null;
         }
+        _stageStartTextT.transform.position = endPos;
 
         yield return new WaitForSeconds(1);
 
-        while (_stageStartTextT.transform.position != startPos)
+        while (Vector3.Distance(_stageStartTextT.transform.position, startPos) > closeEnoughDist)
         {
             _stageStartTextT.transform.position = Vector3.Lerp(_stageStartTextT.transform.position, startPos, Time.deltaTime * speed);
-            if (Vector3.Distance(_stageStartTextT.transform.position, startPos) < 0.05f)
-            {
-                _stageStartTextT.transform.position = startPos;
-            }
+
             yield return null;
         }
+
+        _stageStartTextT.transform.position = startPos;
 
         _animTextC = null;
     }

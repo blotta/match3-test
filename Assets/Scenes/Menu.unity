@@ -1158,9 +1158,9 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 120469349}
-        m_MethodName: PlaySound
-        m_Mode: 5
+      - m_Target: {fileID: 222493475}
+        m_MethodName: PressedQuit
+        m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
@@ -3095,7 +3095,6 @@ GameObject:
   - component: {fileID: 894002474}
   - component: {fileID: 894002473}
   - component: {fileID: 894002472}
-  - component: {fileID: 894002470}
   m_Layer: 5
   m_Name: BackButton
   m_TagString: Untagged
@@ -3123,18 +3122,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 222.90009, y: 136.07172}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &894002470
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 894002468}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: fff92c1fe154bdc43b2af7bfac0d785e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &894002472
 MonoBehaviour:
   m_ObjectHideFlags: 0

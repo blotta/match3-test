@@ -23,14 +23,12 @@ public class StagesMenu : MonoBehaviour
 
         for (int i = 1; i <= stagesData.Count; i++)
         {
-            print($"Setting up button {stagesData[i - 1].stage}");
             int stageNum = stagesData[i - 1].stage;
             var button = Instantiate(_stageButtonPrefab, _content.transform);
             button.name = $"Stage {stageNum}";
             button.GetComponentInChildren<TMP_Text>().text = $"{stageNum}";
             button.GetComponent<Button>().onClick.AddListener(() =>
             {
-                print($"Trying to load stage {stageNum}");
                 GameManager.Instance.LoadStage(stageNum);
                 SoundManager.Instance.PlaySound("select");
             });
@@ -43,7 +41,7 @@ public class StagesMenu : MonoBehaviour
         nbutton.GetComponent<Button>().onClick.AddListener(() =>
         {
             GameManager.Instance.LoadStage(stagesData.Count + 1);
-            print($"Loading stage {stagesData.Count + 1}");
+            SoundManager.Instance.PlaySound("select");
         });
     }
 }

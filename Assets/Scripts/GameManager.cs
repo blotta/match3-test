@@ -11,7 +11,6 @@ public class GameManager : MonoBehaviour
     private static GameManager _instance;
     public static GameManager Instance { get { return _instance; } }
 
-    // public int stagesCleared { get; private set; }
     public int currentStage { get; private set; }
 
     public static SaveData saveData;
@@ -27,18 +26,12 @@ public class GameManager : MonoBehaviour
         }
 
         // Load save
-        // stagesCleared = 0;
         LoadSave();
     }
 
     private void Start()
     {
         currentStage = LastClearedStage() + 1;
-    }
-
-    private void OnDisable()
-    {
-        // SaveGame();
     }
 
     public void StageCleared(StageData stageData)
@@ -137,5 +130,10 @@ public class GameManager : MonoBehaviour
     public void LoadMenu()
     {
         SceneManager.LoadScene("Menu");
+    }
+
+    public void QuitGame()
+    {
+        Application.Quit();
     }
 }

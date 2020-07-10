@@ -107,7 +107,6 @@ public class BoardUtils
 
                 if (currMatch.Count >= 3)
                 {
-                    // print($"Found Match: {currMatch.Count} . Type: {GetGemTypeAt(i, j)}");
                     gemsAlreadyInAMatch.AddRange(currMatch);
                     results.Add(currMatch.ToList());
                 }
@@ -116,15 +115,6 @@ public class BoardUtils
                 currMatch.Clear();
             }
         }
-
-        // if (results.Count > 0)
-        // {
-        //     print($"Matches: {results.Count}");
-        //     foreach (var result in results)
-        //     {
-        //         print($"    Type: {grid[result[0].x, result[0].y]} Count: {result.Count}");
-        //     }
-        // }
 
         return results.ToList();
     }
@@ -180,14 +170,12 @@ public class BoardUtils
     // Returns true on the first match it finds, or false if there are no matches available.
     public static bool HasMovesLeft(Gem.GemType[,] grid)
     {
-        // var mockGrid = GetGGridCopy();
         var w = grid.GetLength(0);
         var h = grid.GetLength(1);
 
         // check matches by shifting rows
         for (int row = 0; row <= h - 1; row++)
         {
-            // Gem.GemType[,] shiftedGrid = GetGGridCopy();
             for (int shiftCount = 1; shiftCount < w - 1; shiftCount++)
             {
                 // Get next shifted grid
@@ -199,11 +187,6 @@ public class BoardUtils
                 // This is returning Count > 0 when it shouldn't
                 if (matches.Count > 0)
                 {
-                    // print($"Still game left (row {row}, shift {shiftCount})");
-                    // foreach (var match in matches)
-                    // {
-                    //     print($"    Type: {shiftedGrid[match[0].x, match[0].y]} Count: {match.Count}");
-                    // }
                     return true;
                 }
             }
@@ -213,22 +196,15 @@ public class BoardUtils
         // Check matches by shifting columns
         for (int col = 0; col <= w - 1; col++)
         {
-            // Gem.GemType[,] shiftedGrid = GetGGridCopy();
             for (int shiftCount = 1; shiftCount < h - 1; shiftCount++)
             {
                 // Get next shifted grid
-                // shiftedGrid = MovedGridLine(shiftedGrid, col, Vector2Int.up);
                 grid = MovedGridLine(grid, col, Vector2Int.up);
 
                 // Check for matches with a shifted grid
                 var matches = CheckMatches(grid);
                 if (matches.Count > 0)
                 {
-                    // print($"Still game left (col {col} shift {shiftCount})");
-                    // foreach (var match in matches)
-                    // {
-                    //     print($"    Type: {shiftedGrid[match[0].x, match[0].y]} Count: {match.Count}");
-                    // }
                     return true;
                 }
             }
@@ -245,7 +221,7 @@ public class BoardUtils
 
         if (direction == Vector2Int.right)
         {
-            int row = idx; // for clarity
+            int row = idx;
 
             // Move row right
             Gem.GemType last = newGrid[grid.GetLength(0) - 1, row];
@@ -257,7 +233,7 @@ public class BoardUtils
         }
         else if (direction == Vector2Int.left)
         {
-            int row = idx; // for clarity
+            int row = idx;
 
             // Move row left
             Gem.GemType first = newGrid[0, row];

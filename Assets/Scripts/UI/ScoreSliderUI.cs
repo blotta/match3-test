@@ -24,7 +24,6 @@ public class ScoreSliderUI : MonoBehaviour
     private void BoardManager_OnScoreUpdated()
     {
         _scorePercent = BoardManager.Instance.StageData.score / BoardManager.Instance.StageData.targetScore;
-        // Debug.Log($"Slider score update {_scorePercent}, {score}, {targetScore}");
     }
 
     void Update()

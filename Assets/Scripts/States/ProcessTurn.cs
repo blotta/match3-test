@@ -17,7 +17,6 @@ public class ProcessTurn : IState
 
     public void Enter()
     {
-        Debug.Log("Entered ProcessTurn state");
     }
 
     public void Execute()

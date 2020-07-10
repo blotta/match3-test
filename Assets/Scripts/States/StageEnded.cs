@@ -8,18 +8,14 @@ public class StageEnded : IState
     private IEnumerator _animPanelC;
     private GameObject _stageEndedPanel;
     private bool _success;
-    // private Action _doneCallback;
 
     public StageEnded(bool success)
     {
         _success = success;
-        // _doneCallback = doneCallback;
     }
 
     public void Enter()
     {
-        Debug.Log("Stage Ended!");
-
         if (_success)
             _stageEndedPanel = GameObject.Find("StageClearedPanel");
         else
@@ -43,26 +39,23 @@ public class StageEnded : IState
 
     public void Execute()
     {
-        // if (_animPanelC == null)
-        //     _doneCallback();
     }
 
     IEnumerator CenterPanel(GameObject panel)
     {
         Vector3 targetPos = new Vector3(Screen.width / 2, Screen.height / 2, panel.transform.position.z);
+        float closeEnoughDist = Vector3.Distance(panel.transform.position, targetPos)  / 1000f;
         float speed = 10f;
 
-        while (panel.transform.position != targetPos)
+        while (Vector3.Distance(panel.transform.position, targetPos) > closeEnoughDist)
         {
             panel.transform.position =
                 Vector3.Lerp(panel.transform.position, targetPos, Time.unscaledDeltaTime * speed);
-            if (Vector3.Distance(panel.transform.position, targetPos) <= 0.05f)
-            {
-                panel.transform.position = targetPos;
-            }
 
             yield return null;
         }
+
+        panel.transform.position = targetPos;
 
         _animPanelC = null;
     }

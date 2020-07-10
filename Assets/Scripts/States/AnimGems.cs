@@ -19,7 +19,6 @@ public class AnimGems : IState
 
     public void Enter()
     {
-        Debug.Log("Entered AnimGems state");
     }
 
     public void Execute()
