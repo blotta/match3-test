@@ -38,9 +38,6 @@ public class BoardManager : MonoBehaviour
     public static event Action OnTimerUpdated = delegate { };
     public static event Action<StageData> OnStageDataReady = delegate { };
 
-    // public float baseTargetPoints;
-    // public float baseTargetPointsRoundMultiplier;
-
     [SerializeField]
     StageData _stageData;
     public StageData StageData => _stageData;
@@ -58,6 +55,7 @@ public class BoardManager : MonoBehaviour
 
         ResetGemGOGrid();
         UpdateWorldBounds();
+        // Camera.main.gameObject.GetComponent<WorldCamera>().ResetCenterAndWidth(worldBoardBound);
 
         foreach (var gem in gemGOGrid)
         {
@@ -91,7 +89,6 @@ public class BoardManager : MonoBehaviour
     private void OnStageStartEnded()
     {
         stageStarted = true;
-        // this.stateMachine.ChangeState(new PlayerTurn(gemGOGrid, worldBoardBound, OnInputEnded));
         this.stateMachine.ChangeState(new AnimGems(gemGOGrid, OnAnimGemsEnded));
     }
 
@@ -148,11 +145,6 @@ public class BoardManager : MonoBehaviour
     private void OnPushDownAndCreateGemsDone()
     {
         this.stateMachine.ChangeState(new AnimGems(gemGOGrid, OnAnimGemsEnded));
-    }
-
-    private void OnStageClearedDone()
-    {
-
     }
 
     public void ShuffleJustBecause()
@@ -222,15 +214,10 @@ public class BoardManager : MonoBehaviour
         {
             for (int j = 0; j < height; j++)
             {
-                // TODO: replace with GemFactory
-                Vector3 worldPos = GridToWorldPos(new Vector2Int(i, j));
-                GameObject gem = Instantiate(gemPrefab, worldPos, Quaternion.identity, transform);
-                gem.GetComponent<Gem>().gemType = gemGrid[i, j];
-                gem.GetComponent<SpriteRenderer>().sprite = GemManager.Instance.GetGemOfType(gemGrid[i, j]).Sprite;
-                // gem.GetComponent<Gem>().originalPosition = gem.transform.position;
-                gem.GetComponent<Gem>().gridPos = new Vector2Int(i, j);
-                gem.name = $"-- {gemGrid[i, j]} --";
-                gemGOGrid[i, j] = gem;
+                gemGOGrid[i, j] = GemFactory(
+                    gemGrid[i, j],
+                    new Vector2Int(i, j),
+                    GridToWorldPos(new Vector2Int(i, j)));
             }
         }
     }
@@ -250,9 +237,7 @@ public class BoardManager : MonoBehaviour
 
         worldBoardBound = new Rect(bottomLeftBound, boundSize);
 
-        // print($"TR Bounds: {trGemBounds}");
-        // print($"Bottom Left Bounds: {bottomLeftBound} ; Top Right Bounds: {topRightBound}");
-        // print($"World Bounds: {worldBoardBound}");
+        GameManager.Instance.AdjustWorldCamera(worldBoardBound);
     }
 
     public void UpdateGemGOGridFromWorldPos()

@@ -34,6 +34,15 @@ public class GameManager : MonoBehaviour
         currentStage = LastClearedStage() + 1;
     }
 
+    public void AdjustWorldCamera(Rect bounds)
+    {
+        GameObject camObj = Camera.main.gameObject;
+        WorldCamera wc;
+        camObj.TryGetComponent<WorldCamera>(out wc);
+        if (wc != null)
+            wc.ResetCenterAndWidth(bounds);
+    }
+
     public void StageCleared(StageData stageData)
     {
         var savedStage = GetSaveDataStage(stageData.stage);
